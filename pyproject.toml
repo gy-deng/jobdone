@@ -1,0 +1,26 @@
+[project]
+name = "jobdone"
+version = "0.1.0"
+description = "Notify when shell tasks finish (webhook/email/desktop)"
+authors = [{ name = "dgy" }]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+  "pyyaml>=6.0",
+]
+
+[project.scripts]
+jobdone = "jobdone.cli:main"
+
+[tool.pyinstaller]
+# Reference section for packaging; actual invocation happens in Makefile.
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

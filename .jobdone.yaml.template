@@ -1,0 +1,20 @@
+# Example local config (comments in English)
+
+default:
+  channels: [webhook, desktop]
+  on: always
+  retries: 1
+  backoff: 2
+webhook:
+  urls:
+    - https://example.com/hook
+  headers:
+    X-Token: ${JOBDONE_WEBHOOK_TOKEN}
+email:
+  smtp_host: smtp.example.com
+  smtp_port: 587
+  smtp_user: myuser
+  smtp_pass: ${JOBDONE_SMTP_PASS}
+  from: noreply@example.com
+  to:
+    - me@example.com

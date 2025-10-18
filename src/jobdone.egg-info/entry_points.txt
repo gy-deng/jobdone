@@ -1,0 +1,2 @@
+[console_scripts]
+jobdone = jobdone.cli:main

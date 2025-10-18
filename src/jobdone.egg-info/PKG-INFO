@@ -1,0 +1,100 @@
+Metadata-Version: 2.4
+Name: jobdone
+Version: 0.1.0
+Summary: Notify when shell tasks finish (webhook/email/desktop)
+Author: dgy
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: pyyaml>=6.0
+
+# JobDone / 任务完成通知工具 (Bilingual)
+
+> Docs are bilingual (Chinese + English); code comments are in English.
+
+## Quick Start / 快速开始
+
+- Install in editable mode / 以可编辑模式安装:
+  ```bash
+  pip install -e .
+  ```
+- Notify on always / 总是通知:
+  ```bash
+  long_task && jobdone -j long_task -c webhook --webhook-url https://example.com/hook -t "任务完成 / Job Done"
+  ```
+- Notify on failure or success / 失败或成功才通知:
+  ```bash
+  my_job; jobdone -j my_job -e $? --on failure -c email
+  my_job; jobdone -j my_job -e $? --on success -c email
+  ```
+- Use STDIN as message / 使用标准输入作为消息:
+  ```bash
+  my_job && echo "任务已完成 / Task finished" | jobdone --stdin -j my_job -c desktop
+  ```
+
+## Configuration / 配置
+
+- ENV / 环境变量:
+  - `JOBDONE_CHANNELS`, `JOBDONE_WEBHOOK_URLS`, `JOBDONE_EMAIL_TO`, `JOBDONE_SMTP_HOST`, `JOBDONE_SMTP_PORT`, `JOBDONE_SMTP_USER`, `JOBDONE_SMTP_PASS`, `JOBDONE_EMAIL_FROM`.
+- YAML / 配置文件:
+  - `~/.config/jobdone/config.yaml` or `.jobdone.yaml` in project.
+  - `~/.config/jobdone/config.yaml` 或项目根目录 `.jobdone.yaml`。
+  - 初始化模板：
+  ```bash
+  mkdir -p ~/.config/jobdone
+  cp .jobdone.yaml.template ~/.config/jobdone/config.yaml
+  # 根据需要修改 ~/.config/jobdone/config.yaml 中的 channels、webhook、email 等
+  ```
+
+### Email / 邮件
+- Provide SMTP via CLI or ENV / 通过 CLI 或 ENV 提供 SMTP:
+  ```bash
+  jobdone -c email \
+    --email-to you@example.com --email-from noreply@example.com \
+    --smtp-host smtp.example.com --smtp-port 587 --smtp-user myuser \
+    --smtp-pass-prompt -t "Job Done"
+  ```
+- Or via ENV / 或通过环境变量:
+  ```bash
+  export JOBDONE_SMTP_HOST=smtp.example.com
+  export JOBDONE_SMTP_PORT=587
+  export JOBDONE_SMTP_USER=myuser
+  export JOBDONE_SMTP_PASS=secret
+  export JOBDONE_EMAIL_FROM=noreply@example.com
+  export JOBDONE_EMAIL_TO=me@example.com
+  jobdone -c email -j build
+  ```
+
+### Webhook / Webhook
+- 请求格式：向 `--webhook-url` 以 `POST` 发送 `application/json`。
+- 负载示例（JSON）：
+  ```json
+  {
+    "title": "任务完成 / Job Done",
+    "message": "Job testjob finished with exit code 0.",
+    "context": {
+      "job": "testjob",
+      "status": "success",
+      "exit_code": 0,
+      "host": "xxx",
+      "user": "xxx",
+      "timestamp": "2025-10-18T12:34:56Z",
+      "source": "jobdone"
+    }
+  }
+  ```
+- 自定义请求头：
+  - CLI：`--header "X-Token: your-token"`（可重复）
+  - YAML：`webhook.headers: { X-Token: ${JOBDONE_WEBHOOK_TOKEN} }`
+- 多 URL：
+  - CLI 重复 `--webhook-url`，或 YAML 使用 `webhook.urls: [url1, url2]`。
+
+## Packaging / 打包
+
+```bash
+make build
+# Binary at dist/jobdone
+make link   # 创建全局软链接到 ~/.local/bin/jobdone
+```
+
+## License
+MIT (no header added in source by convention).

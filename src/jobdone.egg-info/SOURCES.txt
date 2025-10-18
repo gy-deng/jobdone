@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+src/jobdone/__init__.py
+src/jobdone/cli.py
+src/jobdone.egg-info/PKG-INFO
+src/jobdone.egg-info/SOURCES.txt
+src/jobdone.egg-info/dependency_links.txt
+src/jobdone.egg-info/entry_points.txt
+src/jobdone.egg-info/requires.txt
+src/jobdone.egg-info/top_level.txt
