@@ -22,10 +22,14 @@ build: venv
 	$(VENV_BIN)/pyinstaller --onefile -n $(APP_NAME) --hidden-import=yaml src/jobdone/cli.py
 
 install: build
-	@DEST_DIR=$$( [ "$$UID" = "0" ] && echo "/usr/local/bin" || echo "$$HOME/.local/bin" ); \
+	@if [ "$$(id -u)" = "0" ]; then \
+	  DEST_DIR=/usr/local/bin; \
+	else \
+	  DEST_DIR="$$HOME/.local/bin"; \
+	fi; \
 	mkdir -p $$DEST_DIR; \
 	ln -sf $(CURDIR)/dist/$(APP_NAME) $$DEST_DIR/$(APP_NAME); \
-	if [ "$$UID" = "0" ]; then \
+	if [ "$$(id -u)" = "0" ]; then \
 	  echo "Installed $(CURDIR)/dist/$(APP_NAME) -> $$DEST_DIR/$(APP_NAME). Ensure \"/usr/local/bin\" is in PATH."; \
 	else \
 	  echo "Installed $(CURDIR)/dist/$(APP_NAME) -> $$DEST_DIR/$(APP_NAME). Ensure \"$$HOME/.local/bin\" is in PATH."; \
